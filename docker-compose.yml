@@ -1,21 +1,62 @@
 services:
-  mysql:
-    image: mysql:9.7
+
+  backend:
+    container_name: petclinic_java
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    # environment:
+    #   server.port: ${SERVER_PORT:-8080}
+    #   db.url: "jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DBNAME:-ecommjava}?createDatabaseIfNotExist=true"
+    #   db.username: ${MYSQL_USER}
+    #   db.password: ${MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
+      - "8080:8080"
+    depends_on:
+      - mysql                                           # Ensure that the MySQL container starts before phpMyAdmin    
+    networks:
+      - db_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_cont
+    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
       - MYSQL_USER=petclinic
       - MYSQL_PASSWORD=petclinic
       - MYSQL_DATABASE=petclinic
-    volumes:
-      - "./conf.d:/etc/mysql/conf.d:ro"
-  postgres:
-    image: postgres:18.4
     ports:
-      - "5432:5432"
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - type: bind
+        source: ./src/main/resources/db/mysql
+        # source: ./basedata.sql
+        target: /docker-entrypoint-initdb.d
+    networks:
+      - db_network
+
+  mysqladmin:
+    image: phpmyadmin/phpmyadmin:latest                 # Use the latest phpMyAdmin image 
+    container_name: phpmyadmin_container                # Name the phpMyAdmin container 
+    restart: always                                     # Restart the container automatically if it crashes
     environment:
-      - POSTGRES_PASSWORD=petclinic
-      - POSTGRES_USER=petclinic
-      - POSTGRES_DB=petclinic
+      PMA_HOST: mysql                                   # Hostname of the MySQL server (matches the `mysql` service)
+      PMA_USER: petclinic                                    # MySQL root user for phpMyAdmin
+      PMA_PASSWORD: petclinic                       # Password for the MySQL root user
+    ports:
+      - "8085:80"                                       # Expose phpMyAdmin on port 8080
+    depends_on:
+      - mysql                                           # Ensure that the MySQL container starts before phpMyAdmin
+    networks:
+      - db_network
+
+networks:
+  db_network:
+
+volumes:
+  db_data:
