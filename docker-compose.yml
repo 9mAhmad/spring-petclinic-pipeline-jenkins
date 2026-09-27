@@ -7,7 +7,8 @@ services:
       dockerfile: Dockerfile
     # env_file:
     #   - .env
-    # environment:
+    environment:
+      - SPRING_PROFILES_ACTIVE=mysql
     #   server.port: ${SERVER_PORT:-8080}
     #   db.url: "jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DBNAME:-ecommjava}?createDatabaseIfNotExist=true"
     #   db.username: ${MYSQL_USER}
