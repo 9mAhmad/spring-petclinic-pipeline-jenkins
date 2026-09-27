@@ -2,19 +2,20 @@ FROM alpine/java:22-jdk AS builder
 
 
 WORKDIR /app
+# 1. Copy ONLY the files needed to fetch dependencies
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
 
-COPY . .
+# 2. Download dependencies (This layer WILL BE CACHED unless pom.xml changes)
+RUN ./mvnw dependency:go-offline -B
+
+# 3. Copy the rest of the source code
+COPY src ./src
+
+# 4. Build the application package (Skip 'clean' since it's a fresh container)
+RUN ./mvnw package -DskipTests
 
 
-# RUN mvn clean package -DskipTests # compiles the tests but does not run tests
-
-RUN ./mvnw clean package -Dmaven.test.skip=true # does not compile nor run the tests.
-
-# RUN bash -c "ls -1R ./target/"
-
-RUN ls -l
-
-RUN pwd
 
 # --------------------------------------
 
