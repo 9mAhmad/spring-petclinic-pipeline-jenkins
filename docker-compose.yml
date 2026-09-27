@@ -13,7 +13,7 @@ services:
     #   db.username: ${MYSQL_USER}
     #   db.password: ${MYSQL_PASSWORD}
     ports:
-      - "8080:8080"
+      - "8089:8080"
     depends_on:
       - mysql                                           # Ensure that the MySQL container starts before phpMyAdmin    
     networks:
