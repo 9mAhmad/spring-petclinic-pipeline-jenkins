@@ -32,7 +32,7 @@ EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar"]
 
-CMD ["JtSpringProject-0.0.1-SNAPSHOT.war"]
+CMD ["app.jar"]
 
 
 # docker build -t ecommerce_java_mvn:v1.0notest -f ./Dockerfile ./
