@@ -10,9 +10,9 @@ COPY . .
 
 RUN ./mvnw clean package -Dmaven.test.skip=true # does not compile nor run the tests.
 
-RUN ./mvnw -c "ls -1R ./target/"
+RUN bash -c "ls -1R ./target/"
 
-RUN ls -l
+# RUN ls -l
 
 RUN pwd
 
